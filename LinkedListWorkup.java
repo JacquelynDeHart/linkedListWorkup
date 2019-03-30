@@ -6,16 +6,24 @@
  */
 package linkedlistworkup;
 
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+//import java.util.ArrayList;
+
 /**
  *
  * @author Jacquelyn Johnson
  * Course: COSC 2336-2803
  * Date: March 27, 2019
- * @param <T> generic type to be made into a linked list
+ * @param <E> generic type to be made into a linked list
  */ 
-public class LinkedListWorkup<T> {
+public class LinkedListWorkup<E> {
     private Node first;
     private Node last;
+    private Node temp;
+    
     
     /**
      * constructor for the class
@@ -23,7 +31,7 @@ public class LinkedListWorkup<T> {
     public LinkedListWorkup(){
         first = null;
         last = null;
-        
+        temp = null;
     }
     /**
      * checks if list is empty
@@ -51,7 +59,7 @@ public class LinkedListWorkup<T> {
      * this method will add an element to the end of the list
      * @param e the list on which to add a link
      */
-    public void addLast(T e){
+    public void add(E e){
         if(isEmpty()){              //checks for empty
             first = new Node(e);    //if empty, adds a new node
             last = first;           //assigns new node to the end
@@ -61,7 +69,12 @@ public class LinkedListWorkup<T> {
         }
     }
     
-    public void add(int i, T e){
+    /**
+     * this method will add an element at specific index
+     * @param i the index at which to insert the element
+     * @param e the item to insert in the list
+     */
+    public void add(int i, E e){
         if(i<0 || i>size()){
             throw new IndexOutOfBoundsException();
         }
@@ -79,11 +92,16 @@ public class LinkedListWorkup<T> {
         if(pred.next.next == null) last = pred.next;
     }
     
-    public T remove(int i){
+    /**
+     * this method will remove an element from a list
+     * @param i
+     * @return 
+     */
+    public E remove(int i){
         if(i<0 || i>=size()){
             throw new IndexOutOfBoundsException();
         }
-        T element;
+        E element;
         if(i == 0){
             element = first.element;
             first = first.next;
@@ -100,22 +118,46 @@ public class LinkedListWorkup<T> {
         return element;
     }
     
+    public E get(int index){
+        //forces int to be valid
+        assert(index >= 0 && index < size());
+        
+        temp = first;
+        for(int i = 0; i<index; i++){
+            temp = temp.next;
+        }return temp.element;
+    }
+    
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        // TODO code application logic here
+    public static void main(String[] args) throws IOException {
+        LinkedListWorkup ll = new LinkedListWorkup();
+        
+        InputStream is = new FileInputStream("/home/owner/NetBeansProjects/linkedListWorkup/src/linkedlistworkup/names.dat");;
+        DataInputStream dis = new DataInputStream(is);
+        
+        while(dis.available()>0){
+            String k = dis.readUTF();
+            ll.add(k);
+        }
+        System.out.println(ll.size());
+        System.out.println(ll.isEmpty());
+        System.out.println(ll.get(0));
     }
     
+    /**
+     * private inner class creating nodes
+     */
     private class Node{
-        T element;
+        E element;              
         Node next;
-        Node(T el, Node n){
+        Node(E el, Node n){
             element = el;
             next = n;
             
         }
-        Node(T el){
+        Node(E el){
             element = el;
             next = null;
         }
