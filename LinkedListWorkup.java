@@ -10,7 +10,6 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-//import java.util.ArrayList;
 
 /**
  *
@@ -24,6 +23,7 @@ public class LinkedListWorkup<E> {
     private Node last;
     private Node temp;
     
+    private int counter = 0;
     
     /**
      * constructor for the class
@@ -94,12 +94,12 @@ public class LinkedListWorkup<E> {
     
     /**
      * this method will remove an element from a list
-     * @param i
+     * @param i the index of the node to remove
      * @return 
      */
     public E remove(int i){
-        if(i<0 || i>=size()){
-            throw new IndexOutOfBoundsException();
+        if(i<0 || i>size()){       //check size against the index provided 
+            throw new IndexOutOfBoundsException();  //throw exception if not in size
         }
         E element;
         if(i == 0){
@@ -108,8 +108,12 @@ public class LinkedListWorkup<E> {
             if(first == null) last = null;
             return element;
         }
+        if(i == size()){
+            deleteLast(last);
+        }
+        
         Node pred = first;                      //find the predecessor
-        for(int k = 1; k<= i-1; k++){
+        for(int k = 1; k< i-1; k++){
             pred = pred.next;
         }
         element = pred.next.element;            //store element to return
@@ -117,17 +121,96 @@ public class LinkedListWorkup<E> {
         if(pred.next == null) last = pred;      //check
         return element;
     }
+    public E deleteLast(Node head){
+        if(head == null){
+            return head.element;
+        }
+        Node preToLast = null;
+        Node left = head;
+        
+        while(left.next != null){
+            preToLast = left;
+            left = left.next;
+        }
+        return left.element;
+    }
     
+    /**
+     * this method returns the contents of a link
+     * @param index the location at which to pull the element from the list
+     * @return the element stored in that particular link of the list
+     */
     public E get(int index){
         //forces int to be valid
-        assert(index >= 0 && index < size());
+        assert(index >= 0 && index < size());   //forces validity
         
         temp = first;
         for(int i = 0; i<index; i++){
             temp = temp.next;
         }return temp.element;
     }
+    /**
+     * this method removes an node based on the element contained
+     * @param elem  the element to search the list for
+     * @return 
+     */   
+    public E remove(E elem){
+        temp = first;       //starts at the beginning of the list
+        Node two = null;
+        
+        if(first.element.equals(elem)){     //checks first element in the list
+            first = first.next;
+            first.previous = null;
+            counter--;
+            return elem;
+        }
+        else if(last.element.equals(elem)){ //checks last element in the list
+            last = last.previous;
+            last.next = null;
+            counter--;
+            return elem;
+        }
+        //while the element has not been found but more nodes remain...traverse
+        while(temp != null && !temp.element.equals(elem)){
+            two = temp;     //holds reference to elem before one to remove
+            temp = temp.next;   //iterates to next in list of nodes
+        }
+        //if not found, return null
+        if(temp == null){
+            return null;
+        }
+        two.next = temp.next;
+        E spare = temp.element;     //return element
+        temp = null;                //clear temp
+        counter--;                  //decrement counter
+        return spare;
+    }
     
+    public void display(){
+        temp = first;
+        if(isEmpty()){
+            System.out.println("\nList is Empty");
+        }else
+        {
+            while(temp !=null){
+                System.out.println(temp.element);
+                temp = temp.next;
+            }
+        }
+    }
+    
+    public void removeAll(){
+        temp = first;
+        if(isEmpty()){
+            System.out.println("\nList is Empty");
+        }else
+        {
+            while(temp != null){
+                remove(0);
+                temp = temp.next;
+            }
+        }
+    }
     /**
      * @param args the command line arguments
      */
@@ -142,8 +225,17 @@ public class LinkedListWorkup<E> {
             ll.add(k);
         }
         System.out.println(ll.size());
-        System.out.println(ll.isEmpty());
+        //System.out.println(ll.isEmpty());
         System.out.println(ll.get(0));
+        System.out.println(ll.last.element);
+        System.out.println(ll.remove(ll.size()));
+        System.out.println(ll.last.element);
+        System.out.println(ll.remove(ll.size()));
+        System.out.println(ll.get(2));
+        ll.add("45");
+        //ll.display();
+        ll.removeAll();
+        
     }
     
     /**
@@ -151,7 +243,7 @@ public class LinkedListWorkup<E> {
      */
     private class Node{
         E element;              
-        Node next;
+        Node next, previous;
         Node(E el, Node n){
             element = el;
             next = n;
@@ -165,3 +257,31 @@ public class LinkedListWorkup<E> {
 }
     
 }
+//not ready to part with this yet
+
+////public E remove(int i){
+////        assert(i>= 0 && i<size());
+////        temp = first;
+////        
+////        if(i==0){
+////            E elem = first.element;
+////            first = first.next;
+////            counter--;
+////            return elem;
+////        }else if(i == size()){
+////            E elem = last.element;
+////            last = last.previous;
+////            counter--;
+////            return elem;
+////        }
+////        
+////        for(int f=0; f<i-1; f++){
+////            temp = temp.next;
+////        }
+////        Node two = temp.next;
+////        temp.next = two.next;
+////        E elem = two.element;
+////        two = null;     //remove the node
+////        counter--;
+////        return elem;
+////    }
